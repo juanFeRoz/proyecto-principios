@@ -11,6 +11,43 @@ Se demostró que la **escalabilidad horizontal de la infraestructura** (número 
 ## 2. Metodología de Despliegue y Pruebas
 
 El clúster se configuró utilizando **MicroK8s** en tres Máquinas Virtuales (VMs): `gp21` (Líder), `gp22` y `gp4`. Para generar la carga, se utilizó **Locust** (simulando JMeter) con una configuración consistente de **50 usuarios** durante 60 segundos en cada prueba.
+Este resumen describe la metodología rigurosa utilizada para generar la carga de trabajo, la cual es fundamental para asegurar la validez y comparabilidad de las métricas recolectadas.
+
+---
+
+### Descripción de la Metodología para Generar Carga con Locust
+
+Aunque el proyecto sugería el uso de JMeter, se utilizó la herramienta de prueba de carga **Locust** para generar las peticiones HTTP concurrentes. Locust permitió simular el tráfico de múltiples usuarios de manera escalable, recolectando las métricas de rendimiento necesarias para el análisis.
+
+#### A. Objetivo de la Prueba
+
+El objetivo de la metodología fue saturar la aplicación en cada escenario de despliegue para observar y cuantificar dos métricas clave:
+
+1.  **Tiempo Medio de Respuesta (Latencia):** El tiempo promedio que tarda la aplicación en responder a la petición, medido en milisegundos (ms).
+2.  **Throughput (Tasa de Peticiones):** El número de peticiones procesadas exitosamente por la aplicación por segundo (`Requests/s`).
+
+#### B. Configuración de Carga (Parámetros Fijos)
+
+Para garantizar que los resultados entre Docker Compose, K8s 1 Nodo y K8s Multi-Nodo fueran directamente comparables, se utilizaron parámetros de carga idénticos en cada ronda de prueba:
+
+| Parámetro | Valor | Descripción |
+| :--- | :--- | :--- |
+| **Usuarios Concurrentes** | 50 | Número total de usuarios simulados. |
+| **Tasa de Generación (*Spawn Rate*)** | 5/segundo | Tasa a la que los usuarios virtuales se añadieron a la prueba. |
+| **Duración de la Prueba** | 60 segundos | Tiempo total de ejecución de la prueba para cada escenario. |
+| **Endpoint Principal** | `GET /Listar Productos` | Operación crítica de lectura que interactúa con la base de datos poblada. |
+| **IP de Destino** | IP Pública de la VM Líder | El *host* de Locust se configuró con `http://100.115.74.53:30001` (el NodePort de Kubernetes). |
+
+#### C. Procedimiento de Recolección de Datos
+
+El proceso de recolección se repitió para las siete configuraciones de despliegue (Fase 1 + 6 variaciones de K8s):
+
+1.  **Inicialización de la DB:** Antes de cada fase, se verificó la persistencia y la cantidad significativa de datos. Si la DB se había reseteado, se ejecutó la operación de *seed* (`/seed/5000`).
+2.  **Ejecución de Locust:** Se inició Locust contra el NodePort expuesto (30001) para generar la carga.
+3.  **Recolección del Reporte:** Al finalizar cada prueba, se descargó el reporte CSV generado por Locust (nombrados como `reporteX-Y.csv`).
+4.  **Extracción de Métricas:** Para el análisis en el Jupyter Notebook, se extrajeron las métricas de la fila **`Aggregated`** del CSV, la cual resume el rendimiento total de la prueba, asegurando que los datos fueran consistentes.
+
+Esta metodología garantizó una base de datos de rendimiento empírica y rigurosa para extraer conclusiones sobre la escalabilidad.
 
 ### Fases de Despliegue (Paso a Paso)
 

@@ -1,0 +1,46 @@
+# Definición del Service (Permite acceso externo y DNS interno)
+apiVersion: v1
+kind: Service
+metadata:
+  name: tienda-app-service
+spec:
+  type: NodePort # Exposición a través de la IP de los nodos
+  selector:
+    app: tienda-app
+  ports:
+    - protocol: TCP
+      port: 80        # Puerto que usará el Service dentro del clúster
+      targetPort: 5000 # Puerto interno de tu aplicación Flask
+      nodePort: 30001 # 📢 ¡Puerto externo para acceder con Locust/navegador!
+---
+# Definición del Deployment (Controla el Pod de tu aplicación)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tienda-app
+spec:
+  replicas: 1 # ⬅️ Empezamos con 1 réplica para la primera prueba de la Fase 2
+  selector:
+    matchLabels:
+      app: tienda-app
+  template:
+    metadata:
+      labels:
+        app: tienda-app
+    spec:
+      containers:
+      - name: tienda-app
+        image: juferoz/tienda_app:v1 
+        imagePullPolicy: Always # Asegura que siempre baje la última versión
+        ports:
+        - containerPort: 5000
+        env:
+        # Variables de entorno para que la APP encuentre la DB
+        - name: DB_HOST
+          value: "db" # Coincide con el 'Service name' en postgres.yaml
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "password"
+        - name: DB_NAME
+          value: "tienda_db"

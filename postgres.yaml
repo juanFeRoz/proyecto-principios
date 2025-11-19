@@ -1,0 +1,59 @@
+# 1. PersistentVolumeClaim (Para persistencia de datos)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi # Solicita 1 Gigabyte de espacio
+---
+# 2. Service (DNS interno para la App)
+apiVersion: v1
+kind: Service
+metadata:
+  name: db # Este es el nombre que tu API buscará: DB_HOST=db
+spec:
+  ports:
+  - port: 5432 # Puerto estándar de PostgreSQL
+  selector:
+    app: postgres
+  clusterIP: None
+---
+# 3. Deployment (El contenedor de la Base de Datos)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        env:
+        # Variables de entorno para la configuración de la DB
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: POSTGRES_DB
+          value: "tienda_db"
+        ports:
+        - containerPort: 5432
+        # Montar el volumen persistente
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-storage
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc

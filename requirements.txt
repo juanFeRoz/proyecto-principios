@@ -1,0 +1,5 @@
+flask==2.2.3
+Werkzeug==2.2.3
+Flask-SQLAlchemy==3.0.3
+psycopg2-binary==2.9.5
+Faker==18.4.0

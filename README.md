@@ -101,4 +101,3 @@ Los datos recolectados (Archivos CSV: `reporte1.csv` a `reporte3-3replicas.csv`)
 
 * **Escalabilidad:** La aplicación es escalable horizontalmente, pero el rendimiento máximo se logra únicamente cuando se **escala la infraestructura (nodos)** junto con la aplicación.
 * **Eficiencia:** El despliegue de Kubernetes Multi-Nodo (2 Réplicas) ofreció la configuración más eficiente, superando la línea base de Docker Compose.
-* **Recomendación:** Para mejorar aún más el rendimiento, es esencial **escalar la capa de persistencia** (PostgreSQL) y utilizar herramientas de monitorización (como Prometheus/Grafana) para diagnosticar la utilización de recursos de la DB.

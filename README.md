@@ -4,11 +4,7 @@ Este proyecto tuvo como objetivo principal analizar y cuantificar el impacto del
 
 Se compararon tres escenarios principales: **Docker Compose** (línea base), **Kubernetes en un Solo Nodo** (simulación de recursos limitados), y **Kubernetes Multi-Nodo** (escalado horizontal de infraestructura).
 
-### Conclusión Principal
-
-Se demostró que la **escalabilidad horizontal de la infraestructura** (número de nodos de Kubernetes) fue el factor determinante para el rendimiento y la reducción de la latencia, superando las limitaciones impuestas por el escalado de réplicas en un entorno de nodo único. El punto de rendimiento óptimo se alcanzó con **2 réplicas** distribuidas en el clúster Multi-Nodo.
-
-## 2. Metodología de Despliegue y Pruebas
+## Metodología de Despliegue y Pruebas
 
 El clúster se configuró utilizando **MicroK8s** en tres Máquinas Virtuales (VMs): `gp21` (Líder), `gp22` y `gp4`. Para generar la carga, se utilizó **Locust** (simulando JMeter) con una configuración consistente de **50 usuarios** durante 60 segundos en cada prueba.
 Este resumen describe la metodología rigurosa utilizada para generar la carga de trabajo, la cual es fundamental para asegurar la validez y comparabilidad de las métricas recolectadas.
@@ -70,7 +66,7 @@ Esta metodología garantizó una base de datos de rendimiento empírica y riguro
 
 ---
 
-## 3. Resultados Cuantitativos
+## Resultados Cuantitativos
 
 Los datos recolectados (Archivos CSV: `reporte1.csv` a `reporte3-3replicas.csv`) fueron procesados en un Jupyter Notebook para obtener las métricas finales.
 
@@ -88,7 +84,7 @@ Los datos recolectados (Archivos CSV: `reporte1.csv` a `reporte3-3replicas.csv`)
 
 ---
 
-## 4. Análisis y Conclusiones
+## Análisis y Conclusiones
 
 ### Análisis de Tendencias
 
